@@ -1,0 +1,107 @@
+name: 'atadataco_data_warehouse'
+version: '0.0.1'
+
+require-dbt-version: ">=1.0.0"
+config-version: 2
+
+profile: 'atadataco_data_warehouse'
+
+source-paths: ["models"]
+analysis-paths: ["analysis"]
+test-paths: ["tests"]
+data-paths: ["data"]
+macro-paths: ["macros"]
+
+target-path: "target"  # directory which will store compiled SQL files
+clean-targets:         # directories to be removed by `dbt clean`
+    - "target"
+    - "dbt_modules"
+
+on-run-start:
+    - "{% do create_schema(api.Relation.create(database=target.project, schema=generate_prefixed_target_name().strip() + '_logs')) %}"
+    - "create table if not exists {{ generate_prefixed_target_name() }}_logs.audit_dbt_results (object string, status string, row_count numeric, execution_time numeric, load_ts timestamp)"
+
+on-run-end:
+    - "insert into {{ generate_prefixed_target_name() }}_logs.audit_dbt_results (object, status, row_count, execution_time, load_ts) values {{ results_values(results) }}"
+
+models:
+  atadataco_data_warehouse:
+# source adapter general settings
+      sources:
+          materialized: view
+          schema: staging
+
+# integration layer settings
+      integration:
+          materialized: view
+          schema: staging
+
+# warehouse layer settings
+      warehouse:
+          materialized: table
+# util module settings
+      utils:
+          materialized: table
+          schema: logs
+
+# seeds (reference files, loaded into tables) module settings
+seeds:
+  atadataco_data_warehouse:
+    schema: seed
+
+vars:
+
+  marketing_warehouse_ad_campaign_sources: ['facebook_ads','google_ads']
+  marketing_warehouse_ad_group_sources: ['facebook_ads','google_ads']
+  marketing_warehouse_ad_sources: ['facebook_ads','google_ads']
+
+  product_warehouse_event_sources: ['segment_events_page','segment_events_track','segment_events_order_checkout']
+  order_conversion_sources: ['custom']
+  
+  stg_segment_events_etl: segment
+  stg_segment_events_segment_schema: javascript
+  stg_segment_events_site: atadataco.com
+  enable_event_type_mapping: true
+
+  stg_custom_conversions_schema: analytics_staging
+
+  web_sessionization_trailing_window: 3
+  web_inactivity_cutoff: 30 * 60
+  attribution_create_account_event_type: contact_us_pressed
+  attribution_conversion_event_type: order_checkout
+  attribution_order_id_column: event_text
+  attribution_orders_event_table: order_checkout
+  attribution_lookback_days_window : 30
+  attribution_time_decay_days_window : 7
+  attribution_include_conversion_session: true
+
+#  enable_companies_merge_file: true
+#  enable_ip_geo_enrichment: false
+
+  facebook_ads_schema: fivetran_facebook_ads
+  facebook_ads_database: warehouse-dev
+
+  google_ads_api_source: adwords
+  google_ads__url_passthrough_metrics: []
+  google_ads__criteria_passthrough_metrics: []
+  google_ads__ad_stats_passthrough_metrics: []
+  google_ads_schema: fivetran_google_ads
+  google_ads_database: warehouse-dev
+
+  ad_reporting__facebook_ads_schema: staging
+  ad_reporting__facebook_ads_database: warehouse-dev
+  ad_reporting__google_ads_schema: staging
+  ad_reporting__google_ads_database: warehouse-dev
+
+  stg_facebook_ads_source:
+    account_history: "{{ source('facebook_ads','account_history') }}"
+    ad_history: "{{ source('facebook_ads','ad_history') }}"
+    ad_set_history: "{{ source('facebook_ads','ad_set_history') }}"
+    basic_ad: "{{ source('facebook_ads','basic_ad') }}"
+    campaign_history: "{{ source('facebook_ads','campaign_history') }}"
+    creative_history: "{{ source('facebook_ads','creative_history') }}"
+    facebook_ads_schema: fivetran_facebook_ads
+    facebook_ads_database: warehouse-dev
+
+  dbt_utils_dispatch_list: [spark_utils, fivetran_utils]
+  fivetran_utils_dispatch_list: [spark_utils]
