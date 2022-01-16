@@ -11,7 +11,7 @@ The Atadataco Warehouse dbt framework is a set of data models, data transformati
 * Is configured through a set of variables in the dbt_project.yml file
 * [Getting Started with dbt](https://rittmananalytics.com/getting-started-with-dbt) consulting packages
 * [dbt Viewpoint](https://docs.getdbt.com/docs/about/viewpoint/)
-* [dbtCloud](https://docs.getdbt.com/docs/dbt-cloud/cloud-overview) for scheduling and orchestrating dbt and the RA Data Warehouse
+* [dbtCloud](https://docs.getdbt.com/docs/dbt-cloud/cloud-overview) for scheduling and orchestrating dbt and the Data Warehouse
 
 
 ## What Data Warehouse, Data Pipeline and Data Collection Technologies are Supported?
