@@ -2,7 +2,7 @@
 
 The Atadataco Warehouse dbt framework is a set of data models, data transformations and data warehousing design patterns for use with dbt ("Data Build Tool"), an open-source data transformation and orchestration toolkit we use as the core set of models and transformations on all of our client projects.
 
-* Contains pre-built, standardised data source models for popular sources (Facebook Ads, Google Ads, Stripe, Segment, etc)
+* Contains pre-built, standardised data source models for popular sources (Facebook Ads, Google Ads, Segment, etc)
 * Currently configured for Segment data pipeline services
 * Optimized for Snowflake data warehouse targets
 * Combines and integrates data from multiple sources, deduplicates and creates single contact and company records
