@@ -376,5 +376,5 @@ Contributions are welcome. To contribute:
 
 
 
-## Credit for original open-source repo to RittmanAnaltyics:
-![Model Layers](https://github.com/rittmananalytics/ra_data_warehouse/blob/master/img/data_flow.png)
+## Credit for original open-source repo to:
+https://github.com/rittmananalytics/
